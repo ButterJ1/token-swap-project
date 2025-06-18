@@ -3,36 +3,31 @@ const { ethers } = require("hardhat");
 async function main() {
     const [deployer] = await ethers.getSigners();
     
-    console.log("Deploying contracts with the account:", deployer.address);
+    console.log("Deploying contracts with account:", deployer.address);
     console.log("Account balance:", (await ethers.provider.getBalance(deployer.address)).toString());
     
-    // 部署 TokenB（我們的代幣）
+    // Deploy TokenB (our token)
     const TokenB = await ethers.getContractFactory("TokenB");
     const tokenB = await TokenB.deploy(
-        "NewToken",             // 代幣名稱
-        "NT",                   // 代幣符號
-        1000000,                // 初始供應量 (1,000,000)
-        deployer.address        // 初始擁有者
+        "YieldToken",
+        "YTK",
+        1000000,
+        deployer.address
     );
     await tokenB.waitForDeployment();
     console.log("TokenB deployed to:", await tokenB.getAddress());
     
-    // 部署 TokenSwap 合約
+    // Deploy TokenSwap contract
     const TokenSwap = await ethers.getContractFactory("TokenSwap");
     const tokenSwap = await TokenSwap.deploy(
-        await tokenB.getAddress(),       // TokenB 地址
-        deployer.address                 // 合約擁有者
+        await tokenB.getAddress(),
+        deployer.address
     );
     await tokenSwap.waitForDeployment();
     console.log("TokenSwap deployed to:", await tokenSwap.getAddress());
     
-    // 為 TokenSwap 合約提供一些 TokenB
-    const transferAmount = ethers.parseEther("100000");
-    await tokenB.transfer(await tokenSwap.getAddress(), transferAmount);
-    console.log("Transferred 100,000 TokenB to TokenSwap contract");
-    
-    // 部署一個測試用的 TokenA
-    const TestTokenA = await ethers.getContractFactory("TokenB"); // 使用相同的合約模板
+    // Deploy a test TokenA
+    const TestTokenA = await ethers.getContractFactory("TokenB");
     const tokenA = await TestTokenA.deploy(
         "TestTokenA",
         "TTA",
@@ -42,32 +37,30 @@ async function main() {
     await tokenA.waitForDeployment();
     console.log("TestTokenA deployed to:", await tokenA.getAddress());
     
-    // 將 TokenA 添加到支援清單
-    await tokenSwap.addTokenA(await tokenA.getAddress());
-    console.log("Added TestTokenA to supported tokens");
+    // Set up liquidity pool
+    const amountA = ethers.parseEther("60000");  // 60,000 TTA
+    const amountB = ethers.parseEther("20000");  // 20,000 YTK
     
-    // 為 TokenSwap 合約提供一些 TokenA
-    await tokenA.transfer(await tokenSwap.getAddress(), ethers.parseEther("300000"));
-    console.log("Transferred 300,000 TestTokenA to TokenSwap contract");
+    // Approve contract to use tokens
+    await tokenA.approve(await tokenSwap.getAddress(), amountA);
+    await tokenB.approve(await tokenSwap.getAddress(), amountB);
     
-    console.log("\n=== 部署完成 ===");
-    console.log("TokenB (我們的代幣):", await tokenB.getAddress());
-    console.log("TokenSwap 合約:", await tokenSwap.getAddress());
-    console.log("TestTokenA (測試用):", await tokenA.getAddress());
-    console.log("\n=== 交換比例 ===");
-    console.log("3 TokenA = 1 TokenB");
-    console.log("1 TokenB = 3 TokenA");
+    // Create liquidity pool
+    await tokenSwap.addTokenAWithLiquidity(await tokenA.getAddress(), amountA, amountB);
+    console.log("Added TestTokenA to supported tokens with initial liquidity");
     
-    // 驗證部署是否成功
-    console.log("\n=== 驗證部署 ===");
-    const tokenBBalance = await tokenB.balanceOf(await tokenSwap.getAddress());
-    const tokenABalance = await tokenA.balanceOf(await tokenSwap.getAddress());
-    const swapRatio = await tokenSwap.SWAP_RATIO();
+    console.log("\n=== Deployment Complete ===");
+    console.log("TokenB (our token):", await tokenB.getAddress());
+    console.log("TokenSwap contract:", await tokenSwap.getAddress());
+    console.log("TestTokenA (for testing):", await tokenA.getAddress());
     
-    console.log("TokenSwap 合約中的 TokenB 餘額:", ethers.formatEther(tokenBBalance));
-    console.log("TokenSwap 合約中的 TokenA 餘額:", ethers.formatEther(tokenABalance));
-    console.log("交換比例:", swapRatio.toString());
-    console.log("支援的 TokenA 數量:", (await tokenSwap.getSupportedTokenCount()).toString());
+    // Verify deployment success
+    console.log("\n=== Deployment Verification ===");
+    const poolInfo = await tokenSwap.getPoolInfo(await tokenA.getAddress());
+    console.log("TTA reserves in TokenSwap contract:", ethers.formatEther(poolInfo.reserveA));
+    console.log("YTK reserves in TokenSwap contract:", ethers.formatEther(poolInfo.reserveB));
+    console.log("Liquidity constant k:", poolInfo.k.toString());
+    console.log("Current ratio:", Number(ethers.formatEther(poolInfo.reserveA)) / Number(ethers.formatEther(poolInfo.reserveB)));
 }
 
 main()

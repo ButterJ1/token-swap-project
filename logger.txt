@@ -1,91 +1,105 @@
-PS C:\Users\forbu\Documents\GitHub\token-swap-project> npx hardhat test
+PS C:\Users\forbu\Documents\GitHub\token-swap-project> npx hardhat test                 
 
 
   TokenSwap
-    基本功能測試
-      ✔ 應該正確設置交換比例
-      ✔ 應該正確添加支援的 TokenA
-      ✔ 應該正確計算交換比例
-    A 換 B 測試
-      ✔ 應該成功用 TokenA 換 TokenB
-      ✔ 應該拒絕不能被 3 整除的金額
-    B 換 A 測試
-      ✔ 應該成功用 TokenB 換 TokenA
-    管理功能測試
-      ✔ 應該允許 owner 緊急提取代幣
-      ✔ 應該正確顯示合約代幣餘額
+    Deployment and Initialization
+      ✔ should correctly set TokenB
+      ✔ should correctly add liquidity pool
+    Swap Functionality
+      ✔ should correctly calculate A to B swap amount
+      ✔ should successfully execute A to B swap
+      ✔ should reject swaps exceeding slippage tolerance
+      ✔ should correctly update pool reserves
+    Management Functions
+      ✔ should allow owner to emergency withdraw
 
 
-  8 passing (977ms)
+  7 passing (987ms)
 
 PS C:\Users\forbu\Documents\GitHub\token-swap-project> npx hardhat run scripts/deploy.js --network zircuitGarfield
-Deploying contracts with the account: 0xf8F02eFc9Fc39DEdC87860E0E7F2adC17475937D
-Account balance: 21484765062074824
-TokenB deployed to: 0x0B763a6d2D7ea9359e801393aEAB5274222E968c
-TokenSwap deployed to: 0x1A072EC972e9e9Dd1CB80361133dD4A988a6E5aF
-Transferred 100,000 TokenB to TokenSwap contract
-TestTokenA deployed to: 0x52122ddFc8880C1C70dA44cF23533806C93CeA2a
-Added TestTokenA to supported tokens
-Transferred 300,000 TestTokenA to TokenSwap contract
+Deploying contracts with account: 0xf8F02eFc9Fc39DEdC87860E0E7F2adC17475937D
+Account balance: 100608709275822020
+TokenB deployed to: 0xc0F016Ee17076cED54490a7E9D09174f3c253D68
+TokenSwap deployed to: 0xD2110a3aE628ab04efC65996D91F41223ba7A8bC
+TestTokenA deployed to: 0x83603F8B55951c1961fe3345B177f56852b5AE7f
+Added TestTokenA to supported tokens with initial liquidity
 
-=== 部署完成 ===
-TokenB (我們的代幣): 0x0B763a6d2D7ea9359e801393aEAB5274222E968c
-TokenSwap 合約: 0x1A072EC972e9e9Dd1CB80361133dD4A988a6E5aF
-TestTokenA (測試用): 0x52122ddFc8880C1C70dA44cF23533806C93CeA2a
+=== Deployment Complete ===
+TokenB (our token): 0xc0F016Ee17076cED54490a7E9D09174f3c253D68
+TokenSwap contract: 0xD2110a3aE628ab04efC65996D91F41223ba7A8bC
+TestTokenA (for testing): 0x83603F8B55951c1961fe3345B177f56852b5AE7f
 
-=== 交換比例 ===
-3 TokenA = 1 TokenB
-1 TokenB = 3 TokenA
-
-=== 驗證部署 ===
-TokenSwap 合約中的 TokenB 餘額: 100000.0
-TokenSwap 合約中的 TokenA 餘額: 300000.0
-交換比例: 3
-支援的 TokenA 數量: 1
-
-PS C:\Users\forbu\Documents\GitHub\token-swap-project> npx hardhat verify --network zircuitGarfield 0x0B763a6d2D7ea9359e801393aEAB5274222E968c
+=== Deployment Verification ===
+TTA reserves in TokenSwap contract: 60000.0
+YTK reserves in TokenSwap contract: 20000.0
+Liquidity constant k: 1200000000000000000000000000000000000000000000
+Current ratio: 3
+PS C:\Users\forbu\Documents\GitHub\token-swap-project> npx hardhat verify --network zircuitGarfield 0xc0F016Ee17076cED54490a7E9D09174f3c253D68
 Successfully verified contract TokenB on Sourcify.
-https://repo.sourcify.dev/contracts/full_match/48898/0x0B763a6d2D7ea9359e801393aEAB5274222E968c/
+https://repo.sourcify.dev/contracts/full_match/48898/0xc0F016Ee17076cED54490a7E9D09174f3c253D68/
 
-PS C:\Users\forbu\Documents\GitHub\token-swap-project> npx hardhat verify --network zircuitGarfield 0x1A072EC972e9e9Dd1CB80361133dD4A988a6E5aF
+PS C:\Users\forbu\Documents\GitHub\token-swap-project> npx hardhat verify --network zircuitGarfield 0xD2110a3aE628ab04efC65996D91F41223ba7A8bC
 Successfully verified contract TokenSwap on Sourcify.
-https://repo.sourcify.dev/contracts/full_match/48898/0x1A072EC972e9e9Dd1CB80361133dD4A988a6E5aF/
+https://repo.sourcify.dev/contracts/full_match/48898/0xD2110a3aE628ab04efC65996D91F41223ba7A8bC/
 
-PS C:\Users\forbu\Documents\GitHub\token-swap-project> npx hardhat verify --network zircuitGarfield 0x52122ddFc8880C1C70dA44cF23533806C93CeA2a
+PS C:\Users\forbu\Documents\GitHub\token-swap-project> npx hardhat verify --network zircuitGarfield 0x83603F8B55951c1961fe3345B177f56852b5AE7f
 Successfully verified contract TokenB on Sourcify.
-https://repo.sourcify.dev/contracts/full_match/48898/0x52122ddFc8880C1C70dA44cF23533806C93CeA2a/
+https://repo.sourcify.dev/contracts/full_match/48898/0x83603F8B55951c1961fe3345B177f56852b5AE7f/
 
 PS C:\Users\forbu\Documents\GitHub\token-swap-project> npx hardhat run scripts/interact.js --network zircuitGarfield
-使用帳戶:
+=== TokenSwap Interaction Test ===
 Owner: 0xf8F02eFc9Fc39DEdC87860E0E7F2adC17475937D
 User: 0xf8F02eFc9Fc39DEdC87860E0E7F2adC17475937D
-帳戶數量: 1
 
-=== 當前狀態 ===
-Owner TokenA 餘額: 1700000.0
-Owner TokenB 餘額: 900000.0
-User TokenA 餘額: 1700000.0
-User TokenB 餘額: 900000.0
+=== Pool Overview ===
+Active pools count: 1
 
-=== 測試 A 換 B (300 A -> 100 B) ===
-交易者當前 TokenA 餘額: 1700000.0
-授權 TokenSwap 使用 TokenA...
-授權完成
-執行交換...
-交換交易完成，TX Hash: 0x9ac59c2a24bf3307f2d8b4ae84a8c139d3e7147eb0479293c9fe2f3a91473368
-交換後 TokenA 餘額: 1699700.0
-交換後 TokenB 餘額: 900100.0
+💧 TTA (TestTokenA) Pool:
+   Address: 0x83603F8B55951c1961fe3345B177f56852b5AE7f
+   TTA Reserve: 60000.0
+   YTK Reserve: 20000.0
+   Current Ratio: 3.0000:1
+   Liquidity (k): 1200000000000000000000000000000000000000000000
 
-=== 測試 B 換 A (50 B -> 150 A) ===
-授權 TokenSwap 使用 TokenB...
-授權完成
-執行交換...
-交換交易完成，TX Hash: 0x754b32b11ce976b5d94f66b5297ffaad885950b93b26d35f6a9423e28aadc0e3
-最終 TokenA 餘額: 1699850.0
-最終 TokenB 餘額: 900050.0
+=== User Wallet Balances ===
+YTK: 980000.0
+TTA: 1940000.0
 
-=== 合約狀態檢查 ===
-合約中 TokenA 餘額: 300150.0
-合約中 TokenB 餘額: 99950.0
+=== Swap Preview ===
 
-=== 交換完成! ===
+TTA → YTK Swap Preview:
+  100.0 TTA → 33.277870216306156406 YTK (Rate: 3.0050:1)
+  500.0 TTA → 165.289256198347107439 YTK (Rate: 3.0250:1)
+  1000.0 TTA → 327.868852459016393443 YTK (Rate: 3.0500:1)
+  5000.0 TTA → 1538.461538461538461539 YTK (Rate: 3.2500:1)
+
+=== Execute Swap Test ===
+
+Testing TTA → YTK swap
+Expected output: 327.868852459016393443 YTK
+Minimum output (2% slippage): 321.311475409836065574 YTK
+Approving token swap...
+Executing swap...
+✅ Swap completed! TX Hash: 0xb59939c6b81a74a82e688d4f884d0723a30cd225932b973e26665925a20be649
+
+Swap Results:
+  Actually received: 327.868852459016393443 YTK
+  Expected to receive: 327.868852459016393443 YTK
+  Slippage: 0.00%
+
+Pool State Changes:
+  TTA Reserve: 60000.0 → 61000.0
+  YTK Reserve: 20000.0 → 19672.131147540983606557
+  Ratio Change: 3.0000:1 → 3.1008:1
+
+=== Test Reverse Swap (YTK → TokenA) ===
+
+=== Final State ===
+
+TTA Pool Final State:
+  TTA Reserve: 61000.0
+  YTK Reserve: 19672.131147540983606557
+  Current Ratio: 3.1008:1
+  Liquidity Constant: 1200000000000000000000000000000000000000000000
+
+🎉 System Test Complete!
